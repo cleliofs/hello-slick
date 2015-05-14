@@ -20,8 +20,13 @@ object QueryActions extends App {
 
     // Define a pre-compiled parameterized query for reading all key/value
     // pairs up to a given key.
-    val upTo = Compiled { k: Column[Int] =>
+    val upTo = Compiled { k: Rep[Int] =>
       dict.filter(_.key <= k).sortBy(_.key)
+    }
+
+    val byName = Compiled { n: Rep[String] =>
+      dict.filter(_.value === n).sortBy(_.key)
+
     }
 
     // A second pre-compiled query which returns a Set[String]
@@ -56,6 +61,12 @@ object QueryActions extends App {
       upTo(3).result.headOption.map { r =>
         println("Get the first result as an Option, or None")
         println("- " + r)
+      },
+
+      byName("a").result.head.map { r =>
+        println("Get only the first result byName")
+        println(" - " + r)
+
       }
 
     )), Duration.Inf)
